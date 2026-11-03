@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eurotrips — брендбук і tone of voice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Montserrat — фолбек замість Proxima Nova, доки woff2 не підключено -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Ролі сторінки беруть значення з tokens.css; темна тема перевизначає тільки хром сторінки.
+   Свотчі й плашки показують фірмові кольори як є. */
+:root {
+  --g-bg: var(--et-bg); --g-surface: var(--et-surface); --g-raised: var(--et-raised); --g-line: var(--et-line);
+  --g-text: var(--et-text); --g-text-2: var(--et-text-2); --g-text-3: var(--et-text-3);
+  --g-pos: var(--et-positive); --g-pos-bg: #EAF6EF; --g-neg: var(--et-negative); --g-neg-bg: #FDF0F0;
+  --hs: #FDE3E0; --hm: #FEF1D4; --hl: #DFF2E8; --hp: #D3F3F6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --g-bg: #141415; --g-surface: #19191B; --g-raised: #232325; --g-line: rgba(237,237,237,.08);
+    --g-text: #EDEDED; --g-text-2: #A1A1A6; --g-text-3: #85858B;
+    --g-pos: #4CC38A; --g-pos-bg: rgba(76,195,138,.12); --g-neg: #E5484D; --g-neg-bg: rgba(229,72,77,.12);
+    --hs: rgba(229,72,77,.22); --hm: rgba(243,156,18,.22); --hl: rgba(76,195,138,.2); --hp: rgba(46,200,215,.24);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --g-bg: #141415; --g-surface: #19191B; --g-raised: #232325; --g-line: rgba(237,237,237,.08);
+  --g-text: #EDEDED; --g-text-2: #A1A1A6; --g-text-3: #85858B;
+  --g-pos: #4CC38A; --g-pos-bg: rgba(76,195,138,.12); --g-neg: #E5484D; --g-neg-bg: rgba(229,72,77,.12);
+  --hs: rgba(229,72,77,.22); --hm: rgba(243,156,18,.22); --hl: rgba(76,195,138,.2); --hp: rgba(46,200,215,.24);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--g-bg); color: var(--g-text-2); font: var(--et-type-body); }
+a { color: inherit; }
+
+/* Іконки lucide, stroke 1.5, колір від тексту */
+.ic { display: inline-block; flex: none; width: 16px; height: 16px; background: currentColor; -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; }
+.ic-check { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
+.ic-x { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E"); }
+.ic-alert { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+.ic-bulb { --m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); }
+
+/* Навігація */
+.nav { position: sticky; top: 0; z-index: 20; background: var(--g-surface); border-bottom: 1px solid var(--g-line); }
+.nav-inner { max-width: var(--et-container-wide); margin: 0 auto; padding: 0 24px; height: 48px; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-brand { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); padding-right: 16px; margin-right: 8px; border-right: 1px solid var(--g-line); white-space: nowrap; }
+.nav a { flex: none; display: flex; align-items: center; height: 32px; padding: 0 12px; border-radius: var(--et-radius-sm); font: var(--et-type-body-sm); color: var(--g-text-2); text-decoration: none; white-space: nowrap; transition: background-color var(--et-dur-fast) var(--et-ease), color var(--et-dur-fast) var(--et-ease); }
+@media (hover: hover) and (min-width: 1024px) { .nav a:hover { background: var(--g-raised); color: var(--g-text); } }
+
+/* Обкладинка */
+.cover { max-width: var(--et-container-wide); margin: 0 auto; padding: 96px 24px 0; }
+.cover-meta { font: var(--et-type-caption); color: var(--g-text-3); margin-bottom: 16px; }
+.cover h1 { font: var(--et-type-display); letter-spacing: -0.03em; color: var(--g-text); margin-bottom: 24px; max-width: 14ch; }
+.cover-sub { font: var(--et-type-lead); color: var(--g-text-2); max-width: 36rem; margin-bottom: 32px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: var(--et-radius-pill); background: var(--g-surface); box-shadow: inset 0 0 0 1px var(--g-line); font: var(--et-type-body-sm); color: var(--g-text-2); text-decoration: none; transition: color var(--et-dur-fast) var(--et-ease); }
+@media (hover: hover) and (min-width: 1024px) { .pill:hover { color: var(--g-text); } }
+
+.main { max-width: var(--et-container-wide); margin: 0 auto; padding: 0 24px 128px; }
+
+/* Частини і розділи */
+.part { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--g-line); }
+.part .pt-label { font: var(--et-type-caption); color: var(--g-text-3); margin-bottom: 8px; }
+.part h2 { font: var(--et-type-h1); letter-spacing: -0.02em; color: var(--g-text); margin-bottom: 8px; }
+.part p { font: var(--et-type-body); color: var(--g-text-2); max-width: 36rem; }
+
+.chapter { margin-top: 64px; margin-bottom: 20px; scroll-margin-top: 64px; }
+.ch-num { font: var(--et-type-caption); color: var(--g-text-3); margin-bottom: 4px; }
+.chapter h2 { font: var(--et-type-h2); color: var(--g-text); }
+.lead { font: var(--et-type-body); color: var(--g-text-2); max-width: 40rem; margin-bottom: 20px; }
+
+.g2, .g3, .g4 { display: grid; gap: 12px; margin-top: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+
+.card { background: var(--g-surface); border-radius: var(--et-radius-md); padding: 20px; box-shadow: inset 0 0 0 1px var(--g-line); }
+.card-label { font: var(--et-type-caption); color: var(--g-text-3); margin-bottom: 8px; }
+.card h3 { font: var(--et-type-body); font-weight: 600; color: var(--g-text); margin-bottom: 8px; }
+.card p { font: var(--et-type-body-sm); color: var(--g-text-2); }
+
+/* Ядро бренду — момент сторінки, cyan з темним текстом */
+.core { background: var(--et-cyan); color: var(--et-on-cyan); border-radius: var(--et-radius-lg); padding: 40px; margin-top: 20px; }
+.core .eyebrow { font: var(--et-type-caption); color: var(--et-text-2); margin-bottom: 16px; }
+.core .headline { font: var(--et-type-h1); letter-spacing: -0.02em; max-width: 22ch; }
+.core .sub { font: var(--et-type-lead); margin-top: 20px; color: var(--et-text-2); }
+.core .sub strong { color: var(--et-on-cyan); font-weight: 600; }
+
+/* Так / не так */
+.do, .dont { border-radius: var(--et-radius-md); padding: 20px; }
+.do { background: var(--g-pos-bg); } .dont { background: var(--g-neg-bg); }
+.blbl { display: flex; align-items: center; gap: 8px; font: var(--et-type-body-sm); font-weight: 600; margin-bottom: 8px; }
+.do .blbl { color: var(--g-pos); } .dont .blbl { color: var(--g-neg); }
+.do p, .dont p { font: var(--et-type-body-sm); color: var(--g-text); }
+.do p + p, .dont p + p { margin-top: 4px; }
+.pair-title { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text-3); margin: 24px 0 8px; }
+
+/* Свотчі */
+.swatches { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.swatch { border-radius: var(--et-radius-sm); overflow: hidden; background: var(--g-surface); box-shadow: inset 0 0 0 1px var(--g-line); }
+.sw-c { height: 64px; box-shadow: inset 0 -1px 0 var(--g-line); }
+.sw-i { padding: 8px 12px 12px; }
+.sw-n { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); }
+.sw-h { font: var(--et-type-caption); color: var(--g-text-3); font-variant-numeric: tabular-nums; }
+.sw-r { font: var(--et-type-caption); color: var(--g-text-2); margin-top: 4px; }
+.note { margin-top: 12px; padding: 12px 16px; border-radius: var(--et-radius-sm); background: var(--g-raised); font: var(--et-type-body-sm); color: var(--g-text-2); }
+
+/* Типографічний специмен */
+.ts { background: var(--g-surface); border-radius: var(--et-radius-md); padding: 32px; margin-top: 16px; box-shadow: inset 0 0 0 1px var(--g-line); }
+.ts-lbl { font: var(--et-type-caption); color: var(--g-text-3); margin-bottom: 8px; }
+.ts-h { font: var(--et-type-h1); letter-spacing: -0.02em; color: var(--g-text); }
+.ts-body { font: 400 20px/30px var(--et-font); color: var(--g-text-2); }
+.ts-phrase { font: var(--et-type-body); font-weight: 600; color: var(--g-text); }
+.ts-div { height: 1px; background: var(--g-line); margin: 20px 0; }
+
+/* Плашки (соцмережі, банери) */
+.plashka-demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.plk { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: var(--et-radius-pill); background: var(--et-cyan); color: var(--et-on-cyan); font: var(--et-type-body); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plk.ink { background: var(--et-text); color: var(--et-on-dark); }
+.plk.wh { background: var(--et-surface); color: var(--et-text); box-shadow: inset 0 0 0 1px var(--et-line); }
+.plk.ang { transform: rotate(-4deg); }
+
+/* Картки правил */
+.vrc { background: var(--g-surface); border-radius: var(--et-radius-md); overflow: hidden; box-shadow: inset 0 0 0 1px var(--g-line); }
+.vrc-h { padding: 16px 20px; border-bottom: 1px solid var(--g-line); }
+.vrc-h h3 { font: var(--et-type-body); font-weight: 600; color: var(--g-text); }
+.vrc-h span { font: var(--et-type-caption); color: var(--g-text-3); }
+.vrc-b { padding: 16px 20px 20px; }
+.vrc-r { position: relative; padding-left: 16px; font: var(--et-type-body-sm); color: var(--g-text-2); }
+.vrc-r + .vrc-r { margin-top: 8px; }
+.vrc-r::before { content: ""; position: absolute; left: 2px; top: 8px; width: 4px; height: 4px; border-radius: 50%; background: var(--g-text-3); }
+.rp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+.rpg, .rpb { border-radius: var(--et-radius-sm); padding: 12px; }
+.rpg { background: var(--g-pos-bg); } .rpb { background: var(--g-neg-bg); }
+.rp-lbl { display: flex; align-items: center; gap: 4px; font: var(--et-type-caption); font-weight: 600; margin-bottom: 4px; }
+.rpg .rp-lbl { color: var(--g-pos); } .rpb .rp-lbl { color: var(--g-neg); }
+.rp-t { font: var(--et-type-caption); color: var(--g-text-2); }
+
+/* Ритм */
+.rhythm-legend { display: grid; grid-template-columns: repeat(4, 1fr); border-radius: var(--et-radius-md); overflow: hidden; background: var(--g-surface); box-shadow: inset 0 0 0 1px var(--g-line); margin: 16px 0; }
+.rl { padding: 16px; } .rl + .rl { border-left: 1px solid var(--g-line); }
+.rl-dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 8px; }
+.rs { background: #E74C3C; } .rm { background: #F39C12; } .rl2 { background: #27AE60; } .rp { background: var(--et-cyan); }
+.rl strong { display: block; font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); margin-bottom: 2px; }
+.rl span { font: var(--et-type-caption); color: var(--g-text-3); }
+.text-ex { background: var(--g-surface); border-radius: var(--et-radius-md); padding: 28px 32px; font: 400 17px/36px var(--et-font); color: var(--g-text); margin: 16px 0 8px; box-shadow: inset 0 0 0 1px var(--g-line); }
+.tg { height: 12px; }
+.hl { border-radius: 4px; padding: 2px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.hs { background: var(--hs); } .hm { background: var(--hm); } .hl2 { background: var(--hl); } .hp { background: var(--hp); font-weight: 600; }
+.ex-note { font: var(--et-type-caption); color: var(--g-text-3); }
+
+/* Формати */
+.fcard { background: var(--g-surface); border-radius: var(--et-radius-md); overflow: hidden; box-shadow: inset 0 0 0 1px var(--g-line); }
+.fcard-h { padding: 16px 20px; border-bottom: 1px solid var(--g-line); }
+.fcard-h h3 { font: var(--et-type-body); font-weight: 600; color: var(--g-text); }
+.fcard-h span { font: var(--et-type-caption); color: var(--g-text-3); }
+.fcard-b { padding: 16px 20px 20px; }
+.fcard-ex { margin-top: 12px; padding: 12px 16px; border-radius: var(--et-radius-sm); background: var(--g-raised); box-shadow: inset 2px 0 0 var(--et-line-field); font: var(--et-type-body-sm); color: var(--g-text); }
+
+/* Заборонені слова */
+.wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+.wcard { background: var(--g-neg-bg); border-radius: var(--et-radius-sm); padding: 12px 16px; }
+.wcard .w { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-neg); text-decoration: line-through; }
+.wcard .wh { font: var(--et-type-caption); color: var(--g-text-3); }
+.cl { display: grid; gap: 8px; margin-top: 16px; }
+.cli { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-radius: var(--et-radius-sm); background: var(--g-surface); box-shadow: inset 0 0 0 1px var(--g-line); font: var(--et-type-body-sm); color: var(--g-text); }
+.cli .ic { color: var(--g-neg); margin-top: 2px; }
+
+/* Помилки */
+.mistakes, .exs { display: grid; gap: 12px; margin-top: 20px; }
+.mist, .ex { background: var(--g-surface); border-radius: var(--et-radius-md); overflow: hidden; box-shadow: inset 0 0 0 1px var(--g-line); }
+.mist-h { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--g-line); font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); }
+.mist-h .ic { color: var(--g-neg); }
+.mist-b, .ex-b { padding: 16px 20px; }
+.mwrong, .mright { display: flex; gap: 8px; padding: 8px 12px; border-radius: var(--et-radius-sm); font: var(--et-type-body-sm); }
+.mwrong .ic, .mright .ic { margin-top: 2px; }
+.mwrong { background: var(--g-neg-bg); color: var(--g-text); margin-bottom: 8px; } .mwrong .ic { color: var(--g-neg); }
+.mright { background: var(--g-pos-bg); color: var(--g-text); } .mright .ic { color: var(--g-pos); }
+.mwhy { font: var(--et-type-caption); color: var(--g-text-3); margin-top: 8px; }
+
+/* Вправи */
+.ex-h { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--g-line); }
+.ex-n { width: 28px; height: 28px; border-radius: 50%; background: var(--g-raised); box-shadow: inset 0 0 0 1px var(--g-line); display: grid; place-items: center; font: var(--et-type-caption); font-weight: 600; color: var(--g-text); font-variant-numeric: tabular-nums; }
+.ex-t { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); }
+.ex-task { font: var(--et-type-body-sm); color: var(--g-text-2); margin-bottom: 8px; }
+.ex-inp { padding: 12px 16px; border-radius: var(--et-radius-sm); background: var(--g-raised); font: var(--et-type-body-sm); color: var(--g-text-2); }
+.ex-hint { display: flex; gap: 8px; align-items: flex-start; font: var(--et-type-caption); color: var(--g-text-3); margin-top: 8px; }
+
+/* Фінальний чекліст */
+.final-cl { background: var(--g-surface); border-radius: var(--et-radius-lg); padding: 32px 40px; margin-top: 20px; box-shadow: inset 0 0 0 1px var(--g-line); }
+.fcl-lbl { font: var(--et-type-body-sm); font-weight: 600; color: var(--g-text); margin-bottom: 4px; }
+.fcl-lbl + .fci { border-top: 0; }
+.fci { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--g-line); font: var(--et-type-body-sm); color: var(--g-text-2); }
+.fci-box { width: 16px; height: 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--et-line-field); flex: none; margin-top: 2px; }
+.fcl-gap { height: 24px; }
+
+.credit { margin-top: 64px; font: var(--et-type-caption); color: var(--g-text-3); }
+
+@media (max-width: 900px) { .g3, .g4 { grid-template-columns: 1fr 1fr; } .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); } .rhythm-legend { grid-template-columns: 1fr 1fr; } .rl:nth-child(3) { border-left: 0; } .rl:nth-child(n+3) { border-top: 1px solid var(--g-line); } .wgrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) {
+  .g2, .g3, .g4, .rp-pair, .wgrid { grid-template-columns: 1fr; }
+  .swatches { grid-template-columns: 1fr 1fr; }
+  .cover, .main, .nav-inner { padding-left: 16px; padding-right: 16px; }
+  .cover { padding-top: 48px; }
+  .cover h1 { font: 600 40px/44px var(--et-font); letter-spacing: -0.02em; }
+  .core, .final-cl { padding: 24px; }
+  .core .headline, .part h2 { font: var(--et-type-h2); letter-spacing: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Розділи">
+  <div class="nav-inner">
+    <span class="nav-brand">Eurotrips</span>
+    <a href="#brand">Бренд</a>
+    <a href="#colors">Кольори</a>
+    <a href="#typo">Шрифти</a>
+    <a href="#elements">Графіка</a>
+    <a href="#layouts">Макети</a>
+    <a href="#tov">ToV</a>
+    <a href="#rhythm">Ритм</a>
+    <a href="#howto">Приклади</a>
+    <a href="#formats">Формати</a>
+    <a href="#forbidden">Заборонено</a>
+    <a href="#mistakes">Помилки</a>
+    <a href="#exercises">Вправи</a>
+    <a href="#checklist">Чекліст</a>
+  </div>
+</nav>
+
+<header class="cover">
+  <p class="cover-meta">Брендбук і tone of voice, 2025. Редакція unslop від 03.11.2026, палітра і шрифт за DESIGN.md</p>
+  <h1>Брендбук Eurotrips</h1>
+  <p class="cover-sub">Візуальна айдентика і тон комунікації в одному документі — для дизайнерів, копірайтерів і маркетингової команди.</p>
+  <div class="pills">
+    <a class="pill" href="#brand">Ідея бренду</a>
+    <a class="pill" href="#colors">Кольори</a>
+    <a class="pill" href="#typo">Шрифти</a>
+    <a class="pill" href="#elements">Плашки і графіка</a>
+    <a class="pill" href="#layouts">Макети</a>
+    <a class="pill" href="#tov">Tone of voice</a>
+    <a class="pill" href="#rhythm">Ритм тексту</a>
+    <a class="pill" href="#formats">Формати</a>
+    <a class="pill" href="#forbidden">Заборонено</a>
+    <a class="pill" href="#checklist">Чекліст</a>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- ЧАСТИНА 1 -->
+<div class="part">
+  <p class="pt-label">Частина 1</p>
+  <h2>Візуальна айдентика</h2>
+  <p>Кольори, шрифти, графічні елементи і правила макетів.</p>
+</div>
+
+<!-- 1 БРЕНД -->
+<div class="chapter" id="brand">
+  <p class="ch-num">1. Ідея бренду</p>
+  <h2>Позиціонування</h2>
+</div>
+<p class="lead">Одна думка, навколо якої будується все. Кожен текст, кожен візуал, кожен контакт — про одне й те саме.</p>
+
+<div class="core">
+  <p class="eyebrow">Ядро бренду</p>
+  <p class="headline">Eurotrips — подорожі для тих, хто не відкладає життя на потім.</p>
+  <p class="sub"><strong>Ти вирішуєш їхати.</strong><br>Ми беремо на себе все інше.</p>
+</div>
+
+<div class="g4">
+  <div class="card"><p class="card-label">Архетип</p><h3>Провідник</h3><p>Не продавець. Друг, який каже: «Їдь. Я все продумав».</p></div>
+  <div class="card"><p class="card-label">Характер</p><h3>Молоді у погляді</h3><p>Дорослі у відповідальності. Легкість без інфантильності.</p></div>
+  <div class="card"><p class="card-label">Роль</p><h3>Прибираємо бар'єр</h3><p>Між мрією і реальною поїздкою. Беремо складне на себе.</p></div>
+  <div class="card"><p class="card-label">Продукт</p><h3>Ритм і насиченість</h3><p>Багато міст. Короткий час. Максимум досвіду.</p></div>
+</div>
+
+<!-- 2 КОЛЬОРИ -->
+<div class="chapter" id="colors">
+  <p class="ch-num">2. Кольори</p>
+  <h2>Палітра бренду</h2>
+</div>
+<p class="lead">Основа — нейтральна шкала: світло-сірий фон, біле поле, темний текст. Бірюзовий cyan — колір моментів: плашка туру, маршрут, мапа. Рожевий pink — колір дії. Не більше 2–3 кольорів в одному макеті.</p>
+
+<div class="swatches">
+  <div class="swatch"><div class="sw-c" style="background:#2EC8D7"></div><div class="sw-i"><div class="sw-n">Cyan</div><div class="sw-h">#2EC8D7</div><div class="sw-r">Моменти, текст на ньому темний</div></div></div>
+  <div class="swatch"><div class="sw-c" style="background:#FB306A"></div><div class="sw-i"><div class="sw-n">Pink</div><div class="sw-h">#FB306A</div><div class="sw-r">Бренд-графіка, великі площі</div></div></div>
+  <div class="swatch"><div class="sw-c" style="background:#DD2A5F"></div><div class="sw-i"><div class="sw-n">Pink для дії</div><div class="sw-h">#DD2A5F</div><div class="sw-r">Кнопки з білим текстом</div></div></div>
+  <div class="swatch"><div class="sw-c" style="background:#131313"></div><div class="sw-i"><div class="sw-n">Текст</div><div class="sw-h">#131313</div><div class="sw-r">Заголовки, текст на cyan</div></div></div>
+  <div class="swatch"><div class="sw-c" style="background:#FFFFFF"></div><div class="sw-i"><div class="sw-n">Біле поле</div><div class="sw-h">#FFFFFF</div><div class="sw-r">Картки, плашки</div></div></div>
+  <div class="swatch"><div class="sw-c" style="background:#EFEFEF"></div><div class="sw-i"><div class="sw-n">Фон</div><div class="sw-h">#EFEFEF</div><div class="sw-r">Сторінка</div></div></div>
+</div>
+<p class="note">У редакції 2025 основою були синій #1A3FDB, темно-синій #0D2496 і cyan #2EC4E8. Канонічною обрано палітру сайту з DESIGN.md, тому синіх кольорів тут більше немає.</p>
+
+<div class="g2">
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Правильно</p><p>Нейтральна основа. Cyan — у плашці туру, на маршруті й мапі. Pink — тільки кнопка дії. Не більше 3 кольорів на макеті.</p></div>
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Неправильно</p><p>Червоний, жовтий, зелений плашки одночасно. Кольорові плями як підложка під текст. Дрібний білий текст на cyan. Більше 3 акцентів на одному макеті.</p></div>
+</div>
+
+<!-- 3 ШРИФТИ -->
+<div class="chapter" id="typo">
+  <p class="ch-num">3. Типографіка</p>
+  <h2>Шрифти та ієрархія</h2>
+</div>
+<p class="lead">Один шрифт — Proxima Nova, дві ваги: Regular для тексту, SemiBold для заголовків, дат і цін. Регістр звичайний. Ієрархія 1:2: заголовок орієнтовно вдвічі більший за текст.</p>
+
+<div class="g2">
+  <div class="card">
+    <p class="card-label">Заголовки — Proxima Nova SemiBold</p>
+    <p style="font:600 32px/36px var(--et-font);letter-spacing:-0.01em;color:var(--g-text);margin:8px 0 12px">Поїхали</p>
+    <p>Звичайний регістр. Заголовки на постах, лендінгах, назви турів, ключові меседжі. Якщо заголовок довший за 3 рядки, скороти його або розділи на заголовок і текст.</p>
+  </div>
+  <div class="card">
+    <p class="card-label">Основний текст — Proxima Nova Regular</p>
+    <p style="font:400 17px/26px var(--et-font);color:var(--g-text-2);margin:8px 0 12px">Не чекаємо на чорну п'ятницю — запускаємо розпродаж Eurotrips</p>
+    <p>Для описів, підписів, тексту постів. Фрази довші за 2 слова в плашці — <strong>Proxima Nova SemiBold</strong>, без курсиву. Дати і ціни — SemiBold з табличними цифрами.</p>
+  </div>
+</div>
+
+<div class="ts">
+  <p class="ts-lbl">Заголовок, Proxima Nova SemiBold, 40pt</p>
+  <p class="ts-h">Поїхали на різдвяний вікенд</p>
+  <div class="ts-div"></div>
+  <p class="ts-lbl">Основний текст, Proxima Nova Regular, 20pt</p>
+  <p class="ts-body">Не чекаємо на чорну п'ятницю — запускаємо розпродаж Eurotrips</p>
+  <div class="ts-div"></div>
+  <p class="ts-lbl">Плашка з фразою, Proxima Nova SemiBold</p>
+  <p class="ts-phrase">Різдво у Європі від 89€</p>
+  <div class="ts-div"></div>
+  <p class="ts-lbl">Дати і ціни в плашці, Proxima Nova SemiBold, табличні цифри</p>
+  <div class="plashka-demo">
+    <span class="plk">21.12–28.12</span>
+    <span class="plk ink">03.01–10.01</span>
+    <span class="plk">549€</span>
+  </div>
+</div>
+<p class="note">У редакції 2025 заголовки набиралися Druk Text Wide Cyr Heavy великими літерами, фрази в плашках — курсивом. За DESIGN.md і правилами unslop заголовки тепер у Proxima Nova звичайним регістром, курсиву немає.</p>
+
+<div class="g2" style="margin-top:12px">
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Ієрархія 1:2</p><p>Заголовок 40pt — текст 20pt. Різний розмір. Читач одразу бачить головне.</p></div>
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Все одного розміру</p><p>Заголовок і текст однакового розміру — ієрархія зникає, читач загублений.</p></div>
+</div>
+<div class="g2" style="margin-top:8px">
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Міжрядкові інтервали</p><p>Перевіряємо візуально: рядки не мають злипатися або бути занадто далеко.</p></div>
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Списки по центру</p><p>Завжди ліве вирівнювання. Відокремлення — іконки або стрілки →. По центру заборонено.</p></div>
+</div>
+
+<!-- 4 ГРАФІЧНІ ЕЛЕМЕНТИ -->
+<div class="chapter" id="elements">
+  <p class="ch-num">4. Графічні елементи</p>
+  <h2>Плашки, крила, overlay, тіні</h2>
+</div>
+
+<div class="g2">
+  <div class="vrc">
+    <div class="vrc-h"><h3>Фірмова плашка</h3><span>Основний графічний елемент</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Скруглені кути. Короткий, чіткий меседж.</p>
+      <p class="vrc-r">Не більше 3 плашок в межах одного візуалу.</p>
+      <p class="vrc-r">Можна розміщувати рівно або під кутом.</p>
+      <p class="vrc-r">Навколо тексту — вільний простір всередині.</p>
+      <p class="vrc-r">Фрази довші за 2 слова, дати і ціни — Proxima Nova SemiBold. На cyan текст темний.</p>
+      <div class="plashka-demo">
+        <span class="plk">21.12–28.12</span>
+        <span class="plk ink ang">03.01–10.01</span>
+        <span class="plk wh">Різдво у Європі від 89€</span>
+      </div>
+      <div class="rp-pair">
+        <div class="rpg"><p class="rp-lbl"><span class="ic ic-check"></span>До 3 плашок</p><p class="rp-t">1–2 плашки — чисто і читабельно</p></div>
+        <div class="rpb"><p class="rp-lbl"><span class="ic ic-x"></span>Більше 3</p><p class="rp-t">4+ різнокольорових плашки = хаос</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="vrc">
+    <div class="vrc-h"><h3>Плашка з крильцями</h3><span>Виключно для ціни</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Використовується тільки для відображення ціни.</p>
+      <p class="vrc-r">Не більше однієї плашки з крилами на зображенні.</p>
+      <p class="vrc-r">Можна поєднувати з базовими плашками.</p>
+      <p class="vrc-r">Крила — як із плашкою, так і окремий елемент.</p>
+      <div class="rp-pair">
+        <div class="rpg"><p class="rp-lbl"><span class="ic ic-check"></span>Одна плашка з крилами</p><p class="rp-t">549€ — одна, крила симетрично</p></div>
+        <div class="rpb"><p class="rp-lbl"><span class="ic ic-x"></span>Дві плашки з крилами</p><p class="rp-t">Два крилатих елементи на одному зображенні</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="g2" style="margin-top:12px">
+  <div class="vrc">
+    <div class="vrc-h"><h3>Тіні та читабельність</h3><span>Складний фон</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Складний фон → напівпрозорий темний overlay під текстом.</p>
+      <p class="vrc-r">Не додавати тінь до самого тексту — це шум.</p>
+      <p class="vrc-r">Не використовувати кольорові плями під текст — тільки фірмові плашки.</p>
+      <div class="rp-pair">
+        <div class="rpg"><p class="rp-lbl"><span class="ic ic-check"></span>Нейтральний overlay</p><p class="rp-t">Підвищує читабельність без шуму</p></div>
+        <div class="rpb"><p class="rp-lbl"><span class="ic ic-x"></span>Drop shadow на тексті</p><p class="rp-t">Додає зайвий шум, псує фон</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="vrc">
+    <div class="vrc-h"><h3>Градієнт</h3><span>Тільки нейтральний overlay</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Кольоровий градієнт (cyan у pink, синій у cyan) не використовуємо ні як акцент, ні як фон.</p>
+      <p class="vrc-r">Дозволений один випадок: темний нейтральний overlay від краю фото під текстом.</p>
+      <p class="vrc-r">На фото з великою кількістю деталей текст ставимо на плашку, а не на overlay.</p>
+      <p class="vrc-r">Фірмовий колір додаємо плашкою, а не підкладкою під текст.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5 МАКЕТИ -->
+<div class="chapter" id="layouts">
+  <p class="ch-num">5. Макети</p>
+  <h2>Повітря, сейф-зона, формати</h2>
+</div>
+
+<div class="g3">
+  <div class="vrc">
+    <div class="vrc-h"><h3>Повітря на макеті</h3><span>Простір — пріоритет</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Зберігати вільний простір навколо всіх елементів.</p>
+      <p class="vrc-r">Не перевантажувати візуал графічними елементами.</p>
+      <p class="vrc-r">Іноді достатньо лише шрифту або кольору — не потрібні всі прийоми разом.</p>
+    </div>
+  </div>
+  <div class="vrc">
+    <div class="vrc-h"><h3>Сейф-зона</h3><span>Де важливий текст</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Заголовки, дати, вартість — тільки в межах сейф-зони.</p>
+      <p class="vrc-r">За сейф-зону можна виходити, але без ключового контенту.</p>
+      <p class="vrc-r">При затисканні екрану показується повністю, без кнопок.</p>
+    </div>
+  </div>
+  <div class="vrc">
+    <div class="vrc-h"><h3>Stories і Reels</h3><span>Різна сейф-зона</span></div>
+    <div class="vrc-b">
+      <p class="vrc-r">Stories — більша сейф-зона. Рекомендований для розміщення елементів.</p>
+      <p class="vrc-r">Reels — менша сейф-зона через інтерфейс платформи.</p>
+      <p class="vrc-r">Виходити можна, але не розміщувати там важливий текст.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ЧАСТИНА 2 -->
+<div class="part">
+  <p class="pt-label">Частина 2</p>
+  <h2>Tone of voice</h2>
+  <p>Як ми говоримо. Якою мовою. З яким ритмом. І чого ніколи не робимо.</p>
+</div>
+
+<!-- 6 ГОЛОС -->
+<div class="chapter" id="tov">
+  <p class="ch-num">6. Tone of voice</p>
+  <h2>Характер бренду</h2>
+</div>
+<p class="lead">Уяви друга. Не позитивника, не менеджера з туристичної агенції 2010 року. Людину, яка вже була там і каже спокійно: «Їдь. Я все продумав». Ось цей голос — наш.</p>
+
+<div class="g4">
+  <div class="card"><p class="card-label">1</p><h3>Впевнений</h3><p>Не питаємо дозволу. Говоримо з позиції людини, яка знає, що робить.</p></div>
+  <div class="card"><p class="card-label">2</p><h3>Легкий</h3><p>Travel має звучати легко. Без драми і пафосу. Без відчуття, що щось складно.</p></div>
+  <div class="card"><p class="card-label">3</p><h3>Людський</h3><p>Як з другом. Просто, чесно, без рекламної мови.</p></div>
+  <div class="card"><p class="card-label">4</p><h3>Дорослий</h3><p>Без сюсюкань, без youth-сленгу. Сучасно — так. Молодіжно — ні.</p></div>
+</div>
+
+<!-- 7 РИТМ -->
+<div class="chapter" id="rhythm">
+  <p class="ch-num">7. Ритм тексту</p>
+  <h2>Текст як музика</h2>
+</div>
+<p class="lead">Головне правило — постійна зміна довжини речень. Коли всі речення однакові, текст нудить. Чергуємо чотири типи.</p>
+
+<div class="rhythm-legend">
+  <div class="rl"><div class="rl-dot rs"></div><strong>Короткі</strong><span>Темп. Увага. Рух.</span></div>
+  <div class="rl"><div class="rl-dot rm"></div><strong>Середні</strong><span>Сенс. Думка. Розвиток.</span></div>
+  <div class="rl"><div class="rl-dot rl2"></div><strong>Довге</strong><span>Образ. Емоція. Кульмінація.</span></div>
+  <div class="rl"><div class="rl-dot rp"></div><strong>Удар</strong><span>Фінал. Коротко. Крапка.</span></div>
+</div>
+
+<div class="text-ex">
+  <p><span class="hl hs">Більшість мрій не зникають.</span></p>
+  <p><span class="hl hs">Вони просто відкладаються.</span></p>
+  <div class="tg"></div>
+  <p><span class="hl hm">Париж — у збережених. Італія — «якось наступного року».</span></p>
+  <p><span class="hl hm">Завжди є причина почекати. Більше грошей. Кращий момент.</span></p>
+  <div class="tg"></div>
+  <p><span class="hl hl2">І є той день, коли стоїш посеред нового міста, тримаєш ранкову каву і раптом розумієш: добре, що поїхав.</span></p>
+  <div class="tg"></div>
+  <p><span class="hl hs">Ти вирішуєш їхати.</span></p>
+  <p><span class="hl hp">Ми беремо на себе все інше.</span></p>
+</div>
+<p class="ex-note">Тест: прочитай вголос. Звучить як розмова — добре. Як прес-реліз — переписуй.</p>
+
+<!-- 8 ПРИКЛАДИ -->
+<div class="chapter" id="howto">
+  <p class="ch-num">8. Приклади</p>
+  <h2>Як і як не писати</h2>
+</div>
+
+<p class="pair-title">Запрошення в тур</p>
+<div class="g2">
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Не так</p><p>Поїхали кайфувати в Іспанію! Вайби, тусовка і море вражень чекають на тебе! 🔥🔥🔥</p></div>
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Так</p><p>Іспанія. Чотири міста за п'ять днів.<br>Маршрут вже готовий. Ти просто їдеш.</p></div>
+</div>
+
+<p class="pair-title">Опис туру</p>
+<div class="g2">
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Не так</p><p>Незабутня подорож до Греції! Неймовірні краєвиди та кайфова компанія. Тур мрії чекає!</p></div>
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Так</p><p>Греція — це не просто море.<br>Це ранок, коли не хочеться нікуди поспішати.<br>Ми знаємо, як це організувати.</p></div>
+</div>
+
+<p class="pair-title">Перший контакт</p>
+<div class="g2">
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Не так</p><p>Хей! Ти готовий до найкрутішої пригоди у своєму житті? 🌍✈️</p></div>
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Так</p><p>Твоя подорож починається тут.<br>Розкажи, куди давно хотів — ми знайдемо варіант.</p></div>
+</div>
+
+<p class="pair-title">Заклик до дії</p>
+<div class="g2">
+  <div class="dont"><p class="blbl"><span class="ic ic-x"></span>Не так</p><p>НЕ ПРОПУСТИ! НАЙКРАЩІ ТУРИ СЕЗОНУ! БРОНЮЙ ЗАРАЗ!!!</p></div>
+  <div class="do"><p class="blbl"><span class="ic ic-check"></span>Так</p><p>Якщо давно думаєш про Норвегію —<br>можливо, настав час перестати думати.</p></div>
+</div>
+
+<!-- 9 ФОРМАТИ -->
+<div class="chapter" id="formats">
+  <p class="ch-num">9. Формати</p>
+  <h2>Як звучимо в різних форматах</h2>
+</div>
+<p class="lead">Голос бренду — один. Але кожен формат має свій ритм, довжину і правила.</p>
+
+<div class="g3">
+  <div class="fcard">
+    <div class="fcard-h"><h3>Instagram-пост</h3><span>Основний контент-формат</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">3–5 абзаців. Перше речення — гачок.</p>
+      <p class="vrc-r">Ритм: короткі → середні → довге → удар.</p>
+      <p class="vrc-r">Емодзі — тільки в кінці, не в середині.</p>
+      <p class="fcard-ex">«Норвегія. Вісім годин перельоту.<br>І відчуття, ніби потрапив в інший світ.<br><br>Ми вже продумали маршрут.<br>Тобі залишається одне — вирішити їхати.»</p>
+    </div>
+  </div>
+  <div class="fcard">
+    <div class="fcard-h"><h3>Stories і Reels</h3><span>Короткий живий формат</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">Максимум 2–3 речення на екран.</p>
+      <p class="vrc-r">Тільки короткі і середні. Без довгих.</p>
+      <p class="vrc-r">Перше слово — місто, цифра або питання.</p>
+      <p class="fcard-ex">«П'ять міст. Чотири дні.<br>Амбітно? Так.<br>Але ми вміємо планувати.»</p>
+    </div>
+  </div>
+  <div class="fcard">
+    <div class="fcard-h"><h3>Таргетована реклама</h3><span>Для різних аудиторій</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">18–25: перша подорож, відкриття, нові люди.</p>
+      <p class="vrc-r">25–39: перезавантаження, ритм, конкретика.</p>
+      <p class="vrc-r">40+: комфорт, організованість, спокій.</p>
+      <p class="fcard-ex">40+: «Подорож, де все продумано. Ти просто насолоджуєшся містами.»</p>
+    </div>
+  </div>
+  <div class="fcard">
+    <div class="fcard-h"><h3>Сайт і лендінг</h3><span>Перший контакт з брендом</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">Hero: одна думка, максимум 10 слів.</p>
+      <p class="vrc-r">Кнопка: не «Замовити», а «Виріши їхати».</p>
+      <p class="vrc-r">Опис туру: місто + ритм + що беремо на себе.</p>
+      <p class="fcard-ex">«Подорожі для тих,<br>хто не відкладає життя на потім.»</p>
+    </div>
+  </div>
+  <div class="fcard">
+    <div class="fcard-h"><h3>Чат і підтримка</h3><span>Пряма комунікація</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">Без «доброго дня, дякуємо за звернення».</p>
+      <p class="vrc-r">На «ти». Як до знайомого.</p>
+      <p class="vrc-r">Відповідь одразу, без преамбул.</p>
+      <p class="fcard-ex">«Є місця на 15 липня.<br>Прага, Відень, Будапешт.<br>Кинути деталі?»</p>
+    </div>
+  </div>
+  <div class="fcard">
+    <div class="fcard-h"><h3>Email і розсилка</h3><span>Регулярна комунікація</span></div>
+    <div class="fcard-b">
+      <p class="vrc-r">Тема: коротко і конкретно. Без caps lock.</p>
+      <p class="vrc-r">Перший рядок — одне речення. Без «вітаємо».</p>
+      <p class="vrc-r">Думка → деталі → CTA.</p>
+      <p class="fcard-ex">Тема: «Норвегія — є кілька місць на серпень»</p>
+    </div>
+  </div>
+</div>
+
+<!-- 10 ЗАБОРОНЕНО -->
+<div class="chapter" id="forbidden">
+  <p class="ch-num">10. Заборонені слова</p>
+  <h2>Чого ніколи не пишемо</h2>
+</div>
+<p class="lead">Знецінюють продукт, відштовхують аудиторію 30+ і роблять бренд інфантильним.</p>
+
+<div class="wgrid">
+  <div class="wcard"><p class="w">покатушки</p><p class="wh">звучить дешево</p></div>
+  <div class="wcard"><p class="w">тусовка</p><p class="wh">продає «двіж», не цінність</p></div>
+  <div class="wcard"><p class="w">вайб / вайби</p><p class="wh">штучно молодіжно</p></div>
+  <div class="wcard"><p class="w">чілл / чіловий</p><p class="wh">не передає цінність</p></div>
+  <div class="wcard"><p class="w">незабутній</p><p class="wh">заїжджене кліше</p></div>
+  <div class="wcard"><p class="w">неймовірний</p><p class="wh">порожнє слово</p></div>
+  <div class="wcard"><p class="w">тур мрії</p><p class="wh">банальність</p></div>
+  <div class="wcard"><p class="w">живи тут і зараз</p><p class="wh">інфобіз-кліше</p></div>
+  <div class="wcard"><p class="w">CAPS LOCK у тексті</p><p class="wh">рекламний крик</p></div>
+</div>
+
+<div class="cl">
+  <p class="cli"><span class="ic ic-x"></span><span>Три і більше знаків оклику підряд</span></p>
+  <p class="cli"><span class="ic ic-x"></span><span>Емодзі в середині речення або як заміна змісту</span></p>
+  <p class="cli"><span class="ic ic-x"></span><span>«Встигни», «не відмовляй собі», «ти це заслуговуєш» — маніпуляція</span></p>
+  <p class="cli"><span class="ic ic-x"></span><span>Зменшувальні форми: «подорожка», «турчик», «відпусточка»</span></p>
+  <p class="cli"><span class="ic ic-x"></span><span>«Найкращий тур», «неперевершений маршрут» — перебільшення без доказів</span></p>
+</div>
+
+<!-- 11 ПОМИЛКИ -->
+<div class="chapter" id="mistakes">
+  <p class="ch-num">11. Типові помилки</p>
+  <h2>Де найчастіше збиваються</h2>
+</div>
+
+<div class="mistakes">
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 1. Філософія замість тексту</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«Ми — вік, у якому людина себе знаходить. Ми достатньо молоді, щоб мріяти, і достатньо дорослі, щоб діяти.»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«Якщо давно думаєш про Норвегію — настав час поїхати.»</span></p>
+      <p class="mwhy">Абстрактний текст нічого не продає. Travel-бренд звучить легко і конкретно, а не як TED-talk.</p>
+    </div>
+  </div>
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 2. Монотонний ритм</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«Ми організовуємо тури. Ми беремо маршрут. Ми бронюємо готелі. Ми вирішуємо деталі.»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«Маршрут. Готелі. Логістика. Деталі. Ти просто їдеш.»</span></p>
+      <p class="mwhy">Однакова довжина речень вбиває ритм. Читач перестає слухати на другому реченні.</p>
+    </div>
+  </div>
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 3. Штучна мотивація</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«Не відкладай мрії! Живи тут і зараз! Ти це заслуговуєш!»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«Можна відкладати. А можна їхати.»</span></p>
+      <p class="mwhy">Підбадьорення без конкретики — інфобіз. Ми говоримо просто і чесно, без маніпуляції.</p>
+    </div>
+  </div>
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 4. Клішовані описи</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«Незабутня подорож із неймовірними враженнями та чудовими краєвидами!»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«П'ять міст за чотири дні. Амбітно? Так. Але ми вміємо планувати.»</span></p>
+      <p class="mwhy">«Незабутній», «неймовірний» — порожні слова. Конкретика завжди сильніша.</p>
+    </div>
+  </div>
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 5. Рекламний крик</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«БРОНЮЙ ЗАРАЗ!!! КІЛЬКІСТЬ МІСЦЬ ОБМЕЖЕНА!!!»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«Місця ще є. Якщо давно думаєш — варто вирішити.»</span></p>
+      <p class="mwhy">Caps lock і три оклики — паніка. Eurotrips говорить спокійно і впевнено. Ми не продаємо страх.</p>
+    </div>
+  </div>
+  <div class="mist">
+    <p class="mist-h"><span class="ic ic-alert"></span>Помилка 6. Одне велике речення</p>
+    <div class="mist-b">
+      <p class="mwrong"><span class="ic ic-x"></span><span>«Якщо ти давно мріяв про Норвегію, але постійно відкладав через роботу і брак часу, то Eurotrips саме для тебе, бо ми беремо на себе маршрут, готелі і всі деталі.»</span></p>
+      <p class="mright"><span class="ic ic-check"></span><span>«Норвегія давно у збережених? Ми вже продумали маршрут. Тобі залишається одне — вирішити їхати.»</span></p>
+      <p class="mwhy">Одне велике речення губить читача. Розбивай думки. Дай тексту дихати.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 12 ВПРАВИ -->
+<div class="chapter" id="exercises">
+  <p class="ch-num">12. Вправи</p>
+  <h2>Як прокачати стиль</h2>
+</div>
+<p class="lead">Виконай ці вправи перед тим, як братися за реальні тексти.</p>
+
+<div class="exs">
+  <div class="ex">
+    <div class="ex-h"><span class="ex-n">1</span><p class="ex-t">Розбий монотонний текст на ритм</p></div>
+    <div class="ex-b">
+      <p class="ex-task">Переписуй цей рівний текст, змінюючи довжину речень. Додай короткі удари, одне довге образне речення і сильний фінал.</p>
+      <p class="ex-inp">«Eurotrips організовує автобусні тури Європою. Ми беремо на себе маршрут, готелі і транспорт. Наші тури підходять для різних вікових груп. Ми допомагаємо людям здійснити подорожі, які вони давно планували.»</p>
+      <p class="ex-hint"><span class="ic ic-bulb"></span><span>Почни з короткого удару — одне речення, три слова.</span></p>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="ex-h"><span class="ex-n">2</span><p class="ex-t">Вбий кліше</p></div>
+    <div class="ex-b">
+      <p class="ex-task">Знайди всі кліше і заміни кожне на конкретну, живу фразу.</p>
+      <p class="ex-inp">«Незабутня подорож до Іспанії подарує вам неймовірні враження та яскраві емоції! Відчуйте магію нових місць. Тур мрії чекає!»</p>
+      <p class="ex-hint"><span class="ic ic-bulb"></span><span>«Незабутній» → конкретна деталь. «Яскраві емоції» → конкретний момент.</span></p>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="ex-h"><span class="ex-n">3</span><p class="ex-t">Напиши довге образне речення</p></div>
+    <div class="ex-b">
+      <p class="ex-task">Три варіанти кульмінаційного речення для трьох напрямків. Переносить читача в момент.</p>
+      <p class="ex-inp">Напрямки: Норвегія / Рим / Париж. Формат: «І є той момент, коли ти [дія] і раптом [відкриття]»</p>
+      <p class="ex-hint"><span class="ic ic-bulb"></span><span>Сенсорні деталі — запах кави, звук площі, вид з мосту.</span></p>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="ex-h"><span class="ex-n">4</span><p class="ex-t">Тест на читання вголос</p></div>
+    <div class="ex-b">
+      <p class="ex-task">Прочитай готовий текст вголос. Де прискорюєшся? Де тягнеться? Де звучить як прес-реліз?</p>
+      <p class="ex-hint"><span class="ic ic-bulb"></span><span>Якщо хочеться змінити темп у різних місцях — ритм є. Якщо скрізь однаково — переписуй.</span></p>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="ex-h"><span class="ex-n">5</span><p class="ex-t">Напиши пост з нуля</p></div>
+    <div class="ex-b">
+      <p class="ex-task">Тур до Чехії, 5 днів, аудиторія 25–35. Структура: короткі → середні → довге → удар.</p>
+      <p class="ex-inp">Без «незабутній», «неймовірний», «вайб». Без оклику в заголовку. Без емодзі в першому реченні.</p>
+      <p class="ex-hint"><span class="ic ic-bulb"></span><span>Починай з однієї короткої думки — назва міста або питання.</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- 13 ЧЕКЛІСТ -->
+<div class="chapter" id="checklist">
+  <p class="ch-num">13. Чекліст</p>
+  <h2>Перевір перед публікацією</h2>
+</div>
+
+<div class="final-cl">
+  <p class="fcl-lbl">Текст</p>
+  <p class="fci"><span class="fci-box"></span><span>Чи змінюється довжина речень? Є короткі, середні, довге і фінальний удар?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи прочитав вголос? Звучить як розмова — чи як прес-реліз?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи немає слів «незабутній», «неймовірний», «тур мрії», «вайб», «покатушки»?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи немає caps lock і трьох знаків оклику підряд?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи є конкретика? Місто, кількість днів, деталь — не просто «яскраві враження»?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи фінальне речення сильне і запам'ятовується?</span></p>
+  <div class="fcl-gap"></div>
+  <p class="fcl-lbl">Візуал</p>
+  <p class="fci"><span class="fci-box"></span><span>Чи не більше 3 плашок в одному макеті?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи не більше однієї плашки з крилами на зображенні?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи є вільний простір навколо елементів?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи важливий текст (заголовки, дати, ціни) знаходиться в сейф-зоні?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи дотримана ієрархія 1:2 — заголовок вдвічі більший за основний текст?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи немає тіні на самому тексті? Чи є нейтральний overlay для складного фону?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи не використовуються всі фірмові прийоми одночасно?</span></p>
+  <p class="fci"><span class="fci-box"></span><span>Чи темний текст на cyan і чи немає кольорових градієнтів?</span></p>
+</div>
+
+<p class="credit">Редакція інтерфейсу пройшла через unslop. Автор скіла — Damir Sokolovsky (<a href="https://x.com/heydamir">@heydamir</a>), <a href="https://github.com/heydamir/unslop">github.com/heydamir/unslop</a>, CC BY 4.0.</p>
+
+</main>
+</body>
+</html>

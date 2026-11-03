@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eurotrips — дизайн-система, редакція unslop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Montserrat — фолбек замість Proxima Nova, доки woff2 не підключено -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Хром самої сторінки-превью: світла і темна тема. Специмени лежать на світлих
+     дошках, бо дизайн-система поки лише світла. */
+  :root { --pv-bg: var(--et-bg); --pv-text: var(--et-text); --pv-text-2: var(--et-text-2); --pv-text-3: var(--et-text-3); --pv-line: var(--et-line); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --pv-bg: #141415; --pv-text: #ededed; --pv-text-2: #a1a1a6; --pv-text-3: #85858b; --pv-line: rgba(237,237,237,.08); color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --pv-bg: #141415; --pv-text: #ededed; --pv-text-2: #a1a1a6; --pv-text-3: #85858b; --pv-line: rgba(237,237,237,.08); color-scheme: dark; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  button { font: inherit; border: 0; background: none; color: inherit; cursor: pointer; }
+  body { background: var(--pv-bg); color: var(--pv-text-2); font: var(--et-type-body); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 64px 24px 128px; }
+  .intro { max-width: 720px; margin-bottom: 64px; }
+  .intro h1 { font: var(--et-type-h1); letter-spacing: -0.02em; color: var(--pv-text); margin-bottom: 16px; }
+  .intro p { font: var(--et-type-lead); color: var(--pv-text-2); }
+  .intro small { display: block; margin-top: 16px; font: var(--et-type-caption); color: var(--pv-text-3); }
+  .intro a { color: inherit; }
+  section { margin-top: 64px; }
+  section > h2 { font: var(--et-type-h2); color: var(--pv-text); margin-bottom: 8px; }
+  section > p { font: var(--et-type-body-sm); color: var(--pv-text-3); margin-bottom: 24px; max-width: 640px; }
+
+  .board { background: var(--et-surface); color: var(--et-text-2); border-radius: var(--et-radius-md); padding: 24px; color-scheme: light; }
+  .board + .board { margin-top: 16px; }
+  .board.on-bg { background: var(--et-bg); box-shadow: inset 0 0 0 1px var(--et-line); }
+  .board h3.lbl { font: var(--et-type-caption); color: var(--et-text-3); margin-bottom: 12px; font-weight: 400; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .row + .row { margin-top: 24px; }
+
+  .ic { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .ic-18 { width: 18px; height: 18px; }
+
+  /* ---- Кольори ---- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .sw { border-radius: var(--et-radius-sm); overflow: hidden; box-shadow: inset 0 0 0 1px var(--et-line); background: var(--et-surface); }
+  .sw i { display: block; height: 56px; border-bottom: 1px solid var(--et-line); }
+  .sw div { padding: 8px 12px 12px; }
+  .sw b { display: block; font: var(--et-type-body-sm); font-weight: 600; color: var(--et-text); }
+  .sw span, .sw em { display: block; font-style: normal; font: var(--et-type-caption); color: var(--et-text-3); font-variant-numeric: tabular-nums; }
+
+  /* ---- Типографіка ---- */
+  .type-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; align-items: baseline; padding: 16px 0; border-top: 1px solid var(--et-line); }
+  .type-row:first-child { border-top: 0; padding-top: 0; }
+  .type-row > span { font: var(--et-type-caption); color: var(--et-text-3); }
+  .t-display { font: var(--et-type-display); letter-spacing: -0.03em; color: var(--et-text); }
+  .t-h1 { font: var(--et-type-h1); letter-spacing: -0.02em; color: var(--et-text); }
+  .t-h2 { font: var(--et-type-h2); color: var(--et-text); }
+  .t-figure { font: var(--et-type-figure); color: var(--et-text); font-variant-numeric: tabular-nums; }
+  .t-h3 { font: var(--et-type-h3); color: var(--et-text); }
+  .t-lead { font: var(--et-type-lead); color: var(--et-text-2); max-width: 36rem; }
+  .t-body { font: var(--et-type-body); color: var(--et-text-2); max-width: 36rem; }
+  .t-body-sm { font: var(--et-type-body-sm); color: var(--et-text-2); }
+  .t-caption { font: var(--et-type-caption); color: var(--et-text-3); }
+
+  /* ---- Кнопки ---- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: var(--et-control); padding: 0 16px; border-radius: var(--et-radius-pill); border: 1px solid transparent; font: var(--et-type-body-sm); font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none;
+         transition: background-color var(--et-dur-fast) var(--et-ease), border-color var(--et-dur-fast) var(--et-ease), color var(--et-dur-fast) var(--et-ease), transform var(--et-dur-fast) var(--et-ease); }
+  .btn:active { transform: scale(var(--et-press)); }
+  .btn-primary { background: var(--et-accent); color: var(--et-on-accent); }
+  .btn-secondary { background: var(--et-raised); color: var(--et-text); border-color: var(--et-line); }
+  .btn-quiet { background: transparent; color: var(--et-text-2); padding: 0 12px; }
+  .btn-on-photo { background: rgba(19,19,19,.48); color: var(--et-on-dark); border-color: rgba(255,255,255,.24); }
+  .btn-lg { height: var(--et-control-lg); padding: 0 20px; }
+  .btn-sm { height: var(--et-control-sm); padding: 0 12px; }
+  .btn-icon { width: var(--et-control-sm); height: var(--et-control-sm); padding: 0; border-radius: var(--et-radius-sm); }
+  @media (hover: hover) and (min-width: 1024px) {
+    .btn-primary:hover { background: var(--et-accent-hover); }
+    .btn-secondary:hover { background: var(--et-bg); }
+    .btn-quiet:hover { color: var(--et-text); }
+  }
+
+  /* ---- Чипи, вкладки, статуси ---- */
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: var(--et-control-sm); padding: 0 12px; border-radius: var(--et-radius-pill); background: var(--et-surface); box-shadow: inset 0 0 0 1px var(--et-line); font: var(--et-type-body-sm); color: var(--et-text-2); font-variant-numeric: tabular-nums; }
+  .chip .ic { color: var(--et-text-3); }
+  .chip[aria-pressed="true"] { background: var(--et-text); color: var(--et-on-dark); box-shadow: none; }
+  .chip[aria-pressed="true"] .ic { color: var(--et-on-dark); }
+  .tab { display: inline-flex; align-items: center; gap: 8px; height: var(--et-control); padding: 0 16px; border-radius: var(--et-radius-pill); box-shadow: inset 0 0 0 1px var(--et-line); background: var(--et-surface); font: var(--et-type-body-sm); font-weight: 600; color: var(--et-text); }
+  .tab small { font: var(--et-type-caption); color: var(--et-text-3); font-variant-numeric: tabular-nums; }
+  .tab[aria-selected="true"] { background: var(--et-text); color: var(--et-on-dark); box-shadow: none; }
+  .tab[aria-selected="true"] small { color: var(--et-on-dark); }
+  .status { display: inline-flex; align-items: center; gap: 8px; font: var(--et-type-body-sm); color: var(--et-text-2); }
+  .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--et-text-3)); }
+  .s-pos { --dot: var(--et-positive); } .s-warn { --dot: var(--et-warning); } .s-neg { --dot: var(--et-negative); } .s-hot { --dot: var(--et-accent); }
+  .cat { display: inline-flex; align-items: center; gap: 8px; font: var(--et-type-caption); color: var(--et-text-3); }
+  .cat::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
+
+  /* ---- Поля ---- */
+  .fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: end; }
+  .field { display: grid; gap: 4px; }
+  .field > span { font: var(--et-type-caption); color: var(--et-text-2); }
+  .control { position: relative; }
+  .control input, .control select { width: 100%; height: var(--et-control); padding: 0 12px; border-radius: var(--et-radius-sm); border: 1px solid var(--et-line-field); background: var(--et-surface); font: var(--et-type-body-sm); color: var(--et-text); appearance: none; }
+  .control input::placeholder { color: var(--et-text-3); }
+  .control.has-lead input { padding-left: 36px; }
+  .control > .ic { position: absolute; top: 10px; color: var(--et-text-3); pointer-events: none; }
+  .control > .lead { left: 12px; } .control > .trail { right: 12px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; height: var(--et-control); font: var(--et-type-body-sm); color: var(--et-text); }
+  .check input { width: 16px; height: 16px; accent-color: var(--et-accent); }
+
+  /* ---- Плашка туру (момент) ---- */
+  .moments { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .tour { position: relative; height: 440px; }
+  .tour .photo { position: absolute; inset: 0; border-radius: var(--et-radius-md); background: var(--et-raised); box-shadow: inset 0 0 0 1px var(--et-line); }
+  .plate { position: absolute; top: 48px; left: 24px; width: min(360px, calc(100% - 48px)); padding: 20px; border-radius: var(--et-radius-md); background: var(--et-cyan); color: var(--et-on-cyan); }
+  .plate h4 { font: var(--et-type-h3); margin-bottom: 16px; }
+  .plate .cap { font: var(--et-type-caption); color: var(--et-text-2); margin-bottom: 8px; }
+  .plate .dates { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .plate .chip { box-shadow: none; color: var(--et-text); }
+  .route-line { font: var(--et-type-body-sm); margin-bottom: 20px; }
+  .plate .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .price { font: var(--et-type-h3); font-variant-numeric: tabular-nums; }
+
+  .route { background: var(--et-cyan); color: var(--et-on-cyan); border-radius: var(--et-radius-md); padding: 32px 24px 28px; overflow-x: auto; }
+  .route h4 { font: var(--et-type-h3); margin-bottom: 32px; }
+  .route ol { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); position: relative; min-width: 480px; }
+  .route ol::before { content: ""; position: absolute; left: 10%; right: 10%; top: 32px; height: 2px; background: var(--et-on-cyan); }
+  .route li { position: relative; display: grid; justify-items: center; gap: 12px; font: var(--et-type-caption); font-weight: 600; }
+  .route li::after { content: ""; order: 2; width: 10px; height: 10px; border-radius: 50%; background: var(--et-on-cyan); box-shadow: 0 0 0 3px var(--et-cyan); position: relative; top: 0; }
+  .route li span { order: 1; }
+  .route .bus { position: absolute; top: 20px; left: 60%; transform: translateX(-50%); padding: 0 4px; background: var(--et-cyan); line-height: 0; }
+  .route .bus .ic { width: 22px; height: 22px; stroke-width: 1.75; }
+  .route p { font: var(--et-type-caption); margin-top: 24px; color: var(--et-text-2); }
+
+  /* ---- Картки календаря ---- */
+  .cal { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .cal-card { display: flex; flex-direction: column; gap: 12px; min-height: 272px; padding: 16px; border-radius: var(--et-radius-md); background: var(--et-surface); box-shadow: inset 0 0 0 1px var(--et-line); color: var(--et-text); text-decoration: none; transition: box-shadow var(--et-dur-fast) var(--et-ease); }
+  .cal-card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .cal-card .icons { display: flex; gap: 8px; color: var(--et-text-3); }
+  .cal-card h4 { font: var(--et-type-body); font-weight: 600; }
+  .cal-card .dates { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cal-card .foot { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cal-card .from { font: var(--et-type-h3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cal-card .from small { font: var(--et-type-caption); color: var(--et-text-3); }
+  .cal-card.sold { color: var(--et-text-3); }
+  .cal-card.sold h4, .cal-card.sold .from { color: var(--et-text-3); }
+  @media (hover: hover) and (min-width: 1024px) { a.cal-card:hover { box-shadow: inset 0 0 0 1px var(--et-line-field); } }
+
+  /* ---- Таблиця дат ---- */
+  .dates-table { width: 100%; border-collapse: collapse; font: var(--et-type-body-sm); color: var(--et-text); }
+  .dates-table th { height: 36px; padding: 0 16px; background: var(--et-raised); font: var(--et-type-caption); color: var(--et-text-3); text-align: left; font-weight: 400; }
+  .dates-table th:first-child { border-radius: var(--et-radius-sm) 0 0 var(--et-radius-sm); }
+  .dates-table th:last-child { border-radius: 0 var(--et-radius-sm) var(--et-radius-sm) 0; }
+  .dates-table td { height: var(--et-row-table); padding: 0 16px; border-bottom: 1px solid var(--et-line); }
+  .dates-table .num { text-align: right; }
+  .dates-table .old { color: var(--et-text-3); text-decoration: line-through; margin-left: 8px; }
+  .dates-table .promo { color: var(--et-accent-ink); font-weight: 600; }
+  .dates-table .promo-note { display: block; font: var(--et-type-caption); color: var(--et-text-3); }
+  .table-foot { display: flex; justify-content: center; padding-top: 12px; }
+  .scroll-x { overflow-x: auto; }
+
+  /* ---- ETOS ---- */
+  .app { display: grid; grid-template-columns: var(--et-sidebar-app) minmax(0, 1fr); grid-template-rows: var(--et-header-app) auto; min-height: 520px; border-radius: var(--et-radius-lg); overflow: hidden; box-shadow: inset 0 0 0 1px var(--et-line); background: var(--et-bg); color-scheme: light; }
+  .app-head { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--et-surface); border-bottom: 1px solid var(--et-line); }
+  .app-head .brand { display: flex; align-items: center; gap: 8px; font: var(--et-type-body); font-weight: 600; color: var(--et-text); }
+  .app-head .brand i { width: 12px; height: 12px; border-radius: 50%; background: var(--et-logo); }
+  .app-head .who { font: var(--et-type-body-sm); color: var(--et-text-2); }
+  .side { background: var(--et-surface); border-right: 1px solid var(--et-line); padding: 16px 12px; }
+  .side h5 { font: var(--et-type-caption); color: var(--et-text-3); font-weight: 400; padding: 0 12px; margin: 24px 0 8px; }
+  .side h5:first-child { margin-top: 8px; }
+  .side a { display: flex; align-items: center; gap: 8px; height: var(--et-control); padding: 0 12px; border-radius: var(--et-radius-sm); font: var(--et-type-body-sm); color: var(--et-text-2); text-decoration: none; }
+  .side a + a { margin-top: 4px; }
+  .side a .ic { color: var(--et-text-3); }
+  .side a[aria-current="page"] { background: var(--et-raised); color: var(--et-text); font-weight: 600; box-shadow: inset 0 0 0 1px var(--et-line); }
+  .side a .count { margin-left: auto; font: var(--et-type-caption); color: var(--et-text-3); font-variant-numeric: tabular-nums; }
+  .main { padding: 24px 32px 32px; min-width: 0; }
+  .main-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .main-head h4 { font: var(--et-type-h2); color: var(--et-text); }
+  .main-head p { font: var(--et-type-body-sm); color: var(--et-text-3); margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .stat { background: var(--et-surface); border-radius: var(--et-radius-md); box-shadow: inset 0 0 0 1px var(--et-line); padding: 16px 20px; }
+  .stat span { display: block; font: var(--et-type-body-sm); color: var(--et-text-2); }
+  .stat b { display: block; font: var(--et-type-figure); color: var(--et-text); font-variant-numeric: tabular-nums; margin: 8px 0 4px; }
+  .stat small { font: var(--et-type-caption); color: var(--et-text-3); }
+  .grid-card { background: var(--et-surface); border-radius: var(--et-radius-md); box-shadow: inset 0 0 0 1px var(--et-line); padding: 8px; }
+  .bookings { width: 100%; min-width: 680px; border-collapse: collapse; font: var(--et-type-body-sm); color: var(--et-text); }
+  .bookings th { height: 32px; padding: 0 12px; font: var(--et-type-caption); color: var(--et-text-3); text-align: left; font-weight: 400; border-bottom: 1px solid var(--et-line); }
+  .bookings td { height: 48px; padding: 0 12px; border-bottom: 1px solid var(--et-line); vertical-align: middle; }
+  .bookings tr:last-child td { border-bottom: 0; }
+  .bookings .id, .bookings .nw { color: var(--et-text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bookings .nw { color: var(--et-text); }
+  .bookings .status { white-space: nowrap; }
+  .bookings .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bookings td:nth-child(3) { min-width: 200px; }
+  .bookings .sub { display: block; font: var(--et-type-caption); color: var(--et-text-3); }
+
+  @media (max-width: 900px) {
+    .fields, .cal, .stats { grid-template-columns: 1fr 1fr; }
+    .moments { grid-template-columns: 1fr; }
+    .app { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .type-row { grid-template-columns: 1fr; gap: 8px; }
+    .t-display { font: 600 40px/44px var(--et-font); letter-spacing: -0.02em; }
+    .t-h1 { font: var(--et-type-h2); letter-spacing: 0; }
+  }
+  @media (max-width: 560px) {
+    .fields, .cal, .stats { grid-template-columns: 1fr; }
+    .cal-card { min-height: 0; }
+    .route p { max-width: 480px; }
+    .wrap { padding: 48px 16px 96px; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+  <symbol id="i-bus" viewBox="0 0 24 24"><path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="intro">
+    <h1>Дизайн-система Eurotrips після unslop</h1>
+    <p>Тихий хром, два кольори з чіткими ролями: pink позначає дію, cyan живе в моментах — у плашці туру, на маршруті й на мапі. Усе інше бере значення з однієї нейтральної шкали.</p>
+    <small>Значення — з tokens.css. Шрифт тут Montserrat як фолбек Proxima Nova. Процес — unslop від Damir Sokolovsky (<a href="https://x.com/heydamir">@heydamir</a>), <a href="https://github.com/heydamir/unslop">github.com/heydamir/unslop</a>, CC BY 4.0.</small>
+  </header>
+
+  <section>
+    <h2>Кольори</h2>
+    <p>Тринадцять відтінків cyan і pink зведено до двох ролей, двадцять шість сірих — до однієї шкали з трьома ролями тексту. Контраст указано для звичайного тексту на білому, якщо не сказано інше.</p>
+    <div class="board">
+      <h3 class="lbl">Поверхні й лінії</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--et-bg)"></i><div><b>bg</b><span>#EFEFEF</span><em>сторінка</em></div></div>
+        <div class="sw"><i style="background:var(--et-surface)"></i><div><b>surface</b><span>#FFFFFF</span><em>картка, панель</em></div></div>
+        <div class="sw"><i style="background:var(--et-raised)"></i><div><b>raised</b><span>#F5F5F5</span><em>активне, шапка</em></div></div>
+        <div class="sw"><i style="background:linear-gradient(var(--et-line),var(--et-line)),#fff"></i><div><b>line</b><span>#131313</span><em>10%</em></div></div>
+        <div class="sw"><i style="background:var(--et-line-field)"></i><div><b>line-field</b><span>#8C8C8C</span><em>3.36:1</em></div></div>
+      </div>
+    </div>
+    <div class="board">
+      <h3 class="lbl">Текст</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--et-text)"></i><div><b>text</b><span>#131313</span><em>18.6:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-text-2)"></i><div><b>text-2</b><span>#3B3B3B</span><em>11.2:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-text-3)"></i><div><b>text-3</b><span>#6B6B6B</span><em>5.33:1</em></div></div>
+      </div>
+    </div>
+    <div class="board">
+      <h3 class="lbl">Дія, моменти, категорії, семантика</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--et-accent)"></i><div><b>accent</b><span>#DD2A5F</span><em>білий 4.59:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-accent-ink)"></i><div><b>accent-ink, hover</b><span>#C9285A</span><em>5.34:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-cyan)"></i><div><b>cyan</b><span>#2EC8D7</span><em>текст #131313 9.17:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-cyan-ink)"></i><div><b>cyan-ink</b><span>#177480</span><em>5.46:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-cat-purple)"></i><div><b>cat-purple</b><span>#BC5DC7</span><em>лише крапка</em></div></div>
+        <div class="sw"><i style="background:var(--et-cat-green)"></i><div><b>cat-green</b><span>#47D978</span><em>лише крапка</em></div></div>
+        <div class="sw"><i style="background:var(--et-positive)"></i><div><b>positive</b><span>#15803D</span><em>5.02:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-warning)"></i><div><b>warning</b><span>#A16207</span><em>4.92:1</em></div></div>
+        <div class="sw"><i style="background:var(--et-negative)"></i><div><b>negative</b><span>#DC2626</span><em>4.83:1</em></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Типографіка</h2>
+    <p>Proxima Nova у двох вагах, 400 і 600. Ієрархію дають розмір і колір, регістр звичайний, найменший кегль 12px.</p>
+    <div class="board">
+      <div class="type-row"><span>display<br>64/68</span><div class="t-display">Наповни життя яскравими подорожами</div></div>
+      <div class="type-row"><span>h1<br>40/44</span><div class="t-h1">Найближчі тури</div></div>
+      <div class="type-row"><span>h2<br>28/32</span><div class="t-h2">Доступні дати</div></div>
+      <div class="type-row"><span>figure<br>32/36</span><div class="t-figure">4 дні, 1 ніч у готелі, 5&nbsp;636₴</div></div>
+      <div class="type-row"><span>h3<br>20/28</span><div class="t-h3">Вікенд у Будапешті + Відень</div></div>
+      <div class="type-row"><span>lead<br>18/28</span><div class="t-lead">Маршрут, готелі й переїзди вже сплановані. Тобі лишається вирішити, коли їхати.</div></div>
+      <div class="type-row"><span>body<br>16/24</span><div class="t-body">Виїзд зі Львова ввечері, нічний переїзд до Будапешта. Зранку прогулянка набережною Дунаю, після обіду вільний час.</div></div>
+      <div class="type-row"><span>body-sm<br>14/20</span><div class="t-body-sm">Львів → Стрий → Мукачево/Ужгород → Будапешт</div></div>
+      <div class="type-row"><span>caption<br>12/16</span><div class="t-caption">Ціни вказані в гривнях або в еквіваленті до гривні.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Кнопки, чипи, поля</h2>
+    <p>Пігулка лишилась за кнопками, датами, чипами і вкладками. Поля отримали радіус за розміром. Одна основна дія на блок.</p>
+    <div class="board">
+      <div class="row">
+        <button class="btn btn-primary btn-lg">Обрати дати</button>
+        <button class="btn btn-secondary btn-lg"><svg class="ic"><use href="#i-play"/></svg>Відео про тур, 1 хв</button>
+        <button class="btn btn-primary">Докладніше</button>
+        <button class="btn btn-secondary">Шукати</button>
+        <button class="btn btn-secondary btn-sm">Залишити заявку</button>
+        <button class="btn btn-quiet">Скинути фільтри</button>
+        <button class="btn btn-secondary btn-icon" aria-label="Закрити"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="row">
+        <span class="chip">30.10–02.11</span>
+        <span class="chip">14.11–17.11</span>
+        <button class="chip" aria-pressed="true"><svg class="ic"><use href="#i-moon"/></svg>Без нічних переїздів</button>
+        <button class="chip" aria-pressed="false"><svg class="ic"><use href="#i-trend"/></svg>Підвищений попит</button>
+        <button class="chip" aria-pressed="false">Країна<svg class="ic"><use href="#i-chevron"/></svg></button>
+      </div>
+      <div class="row">
+        <button class="tab" role="tab" aria-selected="true">Листопад 2026<small>12</small></button>
+        <button class="tab" role="tab" aria-selected="false">Грудень 2026<small>18</small></button>
+        <button class="tab" role="tab" aria-selected="false">Січень 2027<small>9</small></button>
+      </div>
+      <div class="row">
+        <span class="status s-warn">Останні місця</span>
+        <span class="status s-pos">Гарантований</span>
+        <span class="status">Збирається</span>
+        <span class="status s-hot">Гарячий тур</span>
+        <span class="status s-neg">Оплату відхилено</span>
+      </div>
+    </div>
+    <div class="board on-bg">
+      <div class="fields">
+        <label class="field"><span>Ім'я та прізвище</span><span class="control"><input placeholder="Як у паспорті"></span></label>
+        <label class="field"><span>Країна</span><span class="control"><select><option>Усі країни</option><option>Австрія</option><option>Угорщина</option></select><svg class="ic trail"><use href="#i-chevron"/></svg></span></label>
+        <label class="field"><span>Пошук</span><span class="control has-lead"><svg class="ic lead"><use href="#i-search"/></svg><input placeholder="Пошук туру"></span></label>
+        <label class="check"><input type="checkbox" checked>Без нічних переїздів</label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Моменти: плашка туру і маршрут</h2>
+    <p>Єдине місце, де колір насичений. Текст на cyan темний, бо білий давав 2.03:1. Маршрутна лінія — підпис бренду: рядок зі стрілками в плашці і таймлайн із точками на сторінці туру.</p>
+    <div class="moments">
+      <div class="tour">
+        <div class="photo" role="img" aria-label="Слот для фото туру 491 × 472"></div>
+        <div class="plate">
+          <h4>Вікенд у Будапешті + Відень</h4>
+          <p class="cap">Доступні дати</p>
+          <div class="dates"><span class="chip">30.10–02.11</span><span class="chip">14.11–17.11</span><span class="chip">28.11–01.12</span></div>
+          <p class="route-line">Львів → Стрий → Мукачево/Ужгород → Будапешт</p>
+          <div class="foot"><span class="price" data-price>5&nbsp;636₴</span><a class="btn btn-primary" href="#">Докладніше</a></div>
+        </div>
+      </div>
+      <div class="route">
+        <h4>Маршрут туру</h4>
+        <ol>
+          <li><span>Львів</span></li>
+          <li><span>Стрий</span></li>
+          <li><span>Мукачево</span></li>
+          <li><span>Будапешт</span></li>
+          <li><span>Відень</span></li>
+          <span class="bus" aria-hidden="true"><svg class="ic"><use href="#i-bus"/></svg></span>
+        </ol>
+        <p>Лінія, точки й підписи — у #131313 на cyan. Автобус може повільно рухатися вздовж лінії, при prefers-reduced-motion стоїть.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Календар турів</h2>
+    <p>Картки стали білими. Колір типу туру лишився, але тепер це крапка поруч із назвою типу, а статус місць — крапка з текстом.</p>
+    <div class="board on-bg">
+      <div class="cal">
+        <a class="cal-card" href="#">
+          <div class="top"><span class="cat" style="--dot:var(--et-cat-cyan)">Тури на вихідні</span><span class="icons"><svg class="ic"><use href="#i-bus"/></svg><svg class="ic"><use href="#i-bed"/></svg></span></div>
+          <h4>Вікенд у Будапешті + Відень</h4>
+          <div class="dates"><span class="chip">30.10–02.11</span><span class="chip">14.11–17.11</span></div>
+          <div class="foot"><span class="status s-warn">Останні місця</span><span class="from"><small>від </small>5&nbsp;119₴</span></div>
+        </a>
+        <a class="cal-card" href="#">
+          <div class="top"><span class="cat" style="--dot:var(--et-cat-purple)">Новорічні тури</span><span class="icons"><svg class="ic"><use href="#i-bus"/></svg><svg class="ic"><use href="#i-flame"/></svg></span></div>
+          <h4>Новорічна Прага і Дрезден</h4>
+          <div class="dates"><span class="chip">29.12–02.01</span></div>
+          <div class="foot"><span class="status s-pos">Гарантований</span><span class="from"><small>від </small>11&nbsp;480₴</span></div>
+        </a>
+        <a class="cal-card" href="#">
+          <div class="top"><span class="cat" style="--dot:var(--et-cat-green)">Без нічних переїздів</span><span class="icons"><svg class="ic"><use href="#i-bed"/></svg></span></div>
+          <h4>Зальцбург і озера Австрії</h4>
+          <div class="dates"><span class="chip">06.12–10.12</span><span class="chip">20.12–24.12</span></div>
+          <div class="foot"><span class="status">Збирається</span><span class="from"><small>від </small>9&nbsp;870₴</span></div>
+        </a>
+        <div class="cal-card sold" aria-disabled="true">
+          <div class="top"><span class="cat" style="--dot:var(--et-cat-cyan)">Тури на вихідні</span><span class="icons"><svg class="ic"><use href="#i-bus"/></svg></span></div>
+          <h4>Краків і Величка</h4>
+          <div class="dates"><span class="chip">07.11–09.11</span></div>
+          <div class="foot"><span class="status">Місць немає</span><span class="from"><small>від </small>4&nbsp;260₴</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Таблиця «Доступні дати»</h2>
+    <p>Шапка стала тихою, кнопки в рядках — вторинними: основна дія на сторінці туру одна, «Обрати дати» в hero.</p>
+    <div class="board">
+      <div class="scroll-x">
+        <table class="dates-table">
+          <thead><tr><th>Дата</th><th>Статус</th><th>Ціна</th><th class="num">Місць</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>30.10.26–02.11.26</td><td><span class="status s-warn">Останні місця</span></td><td><span class="promo">8&nbsp;270₴</span><span class="old">10&nbsp;340₴</span><span class="promo-note">акційна ціна</span></td><td class="num">4</td><td class="num"><button class="btn btn-secondary btn-sm">Залишити заявку</button></td></tr>
+            <tr><td>14.11.26–17.11.26</td><td><span class="status s-pos">Гарантований</span></td><td>5&nbsp;636₴</td><td class="num">18</td><td class="num"><button class="btn btn-secondary btn-sm">Залишити заявку</button></td></tr>
+            <tr><td>28.11.26–01.12.26</td><td><span class="status">Збирається</span></td><td>5&nbsp;636₴</td><td class="num">32</td><td class="num"><button class="btn btn-secondary btn-sm">Залишити заявку</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-foot"><button class="btn btn-quiet">Більше дат<svg class="ic"><use href="#i-chevron"/></svg></button></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>ETOS: робочий екран</h2>
+    <p>Той самий набір токенів у щільному інтерфейсі: біла навігація з рядками 36px, сірий фон робочої області, одна основна дія, статуси крапкою.</p>
+    <div class="app">
+      <div class="app-head"><span class="brand"><i></i>ETOS</span><span class="who">Менеджер з бронювання</span></div>
+      <nav class="side" aria-label="Розділи">
+        <h5>Робота</h5>
+        <a href="#" aria-current="page"><svg class="ic"><use href="#i-ticket"/></svg>Бронювання<span class="count">14</span></a>
+        <a href="#"><svg class="ic"><use href="#i-calendar"/></svg>Тури</a>
+        <a href="#"><svg class="ic"><use href="#i-users"/></svg>Клієнти</a>
+        <h5>Довідники</h5>
+        <a href="#"><svg class="ic"><use href="#i-map"/></svg>Маршрути</a>
+        <a href="#"><svg class="ic"><use href="#i-building"/></svg>Готелі</a>
+      </nav>
+      <div class="main">
+        <div class="main-head">
+          <div><h4>Бронювання</h4><p>Листопад 2026</p></div>
+          <button class="btn btn-primary"><svg class="ic"><use href="#i-plus"/></svg>Нове бронювання</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>Нові заявки</span><b>14</b><small>+3 до минулого тижня</small></div>
+          <div class="stat"><span>Очікують оплати</span><b>5</b><small>2 з терміном до 05.11</small></div>
+          <div class="stat"><span>Підтверджено</span><b>38</b><small>+6 до минулого тижня</small></div>
+        </div>
+        <div class="grid-card scroll-x">
+          <table class="bookings">
+            <thead><tr><th>№</th><th>Клієнт</th><th>Тур</th><th>Дати</th><th class="num">Місць</th><th>Статус</th><th class="num">Сума</th></tr></thead>
+            <tbody>
+              <tr><td class="id">2611-0142</td><td>Олена Коваль</td><td>Вікенд у Будапешті + Відень<span class="sub">Львів → Стрий → Будапешт</span></td><td class="nw">14.11–17.11</td><td class="num">2</td><td><span class="status s-pos">Підтверджено</span></td><td class="num">11&nbsp;272₴</td></tr>
+              <tr><td class="id">2611-0143</td><td>Андрій Мельник</td><td>Новорічна Прага і Дрезден<span class="sub">Київ → Львів → Прага</span></td><td class="nw">29.12–02.01</td><td class="num">3</td><td><span class="status s-warn">Очікує оплати</span></td><td class="num">34&nbsp;440₴</td></tr>
+              <tr><td class="id">2611-0144</td><td>Ірина Бойко</td><td>Зальцбург і озера Австрії<span class="sub">Рівне → Львів → Зальцбург</span></td><td class="nw">06.12–10.12</td><td class="num">1</td><td><span class="status">Нова заявка</span></td><td class="num">9&nbsp;870₴</td></tr>
+              <tr><td class="id">2611-0145</td><td>Тарас Гнатюк</td><td>Вікенд у Будапешті + Відень<span class="sub">Львів → Стрий → Будапешт</span></td><td class="nw">30.10–02.11</td><td class="num">2</td><td><span class="status s-neg">Оплату відхилено</span></td><td class="num">16&nbsp;540₴</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
